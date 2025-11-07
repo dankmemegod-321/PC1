@@ -1,0 +1,79 @@
+import pandas as pd
+ from sklearn.model_selection import train_test_split
+ from sklearn.feature_extraction.text import TfidfVectorizer
+ from sklearn.neighbors import KNeighborsClassifier
+ from sklearn.svm import SVC
+ from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+ import matplotlib.pyplot as plt
+ import seaborn as sns
+
+df = pd.read_csv("emails.csv")
+
+df
+
+df.describe()
+
+df.info()
+
+df.head()
+
+df.tail()
+
+df.shape
+
+df.size
+
+ df.isnull()
+
+df.isna().sum()
+
+ df = df.drop('Email No.', axis=1)
+
+X = df.iloc[:, :-1]
+ y = df.iloc[:,-1]
+
+ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state
+
+print("\nTraining K-Nearest Neighbors (KNN) Classifier...")
+ knn = KNeighborsClassifier(n_neighbors=5)
+ knn.fit(X_train, y_train)
+ y_pred_knn = knn.predict(X_test)
+
+print("Training Support Vector Machine (SVM) Classifier...")
+ svm = SVC(kernel='linear', random_state=42)
+ svm.fit(X_train, y_train)
+ y_pred_svm = svm.predict(X_test)
+
+print("\n--- Performance Analysis ---")
+ print("\nK-Nearest Neighbors (KNN) Classifier:")
+ print("Accuracy:", accuracy_score(y_test, y_pred_knn))
+ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_knn))
+ print("Classification Report:\n", classification_report(y_test, y_pred_knn))
+ print("\nSupport Vector Machine (SVM) Classifier:")
+ print("Accuracy:", accuracy_score(y_test, y_pred_svm))
+ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_svm))
+ print("Classification Report:\n", classification_report(y_test, y_pred_svm))
+
+if accuracy_score(y_test, y_pred_knn) > accuracy_score(y_test, y_pred_svm):
+ print("Conclusion: K-Nearest Neighbors performed better than Support Vector Machine."
+ elif accuracy_score(y_test, y_pred_svm) > accuracy_score(y_test, y_pred_knn):
+ print("Conclusion: Support Vector Machine performed better than K-Nearest Neighbors."
+ else:
+ print("Conclusion: Both models performed similarly.")
+
+def plot_cm(y_true, y_pred, title):
+ cm = confusion_matrix(y_true, y_pred)
+ plt.figure(figsize=(6, 5))
+ sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False,
+ xticklabels=['Not Spam', 'Spam'],
+ yticklabels=['Not Spam', 'Spam'])
+ plt.title(f'Confusion Matrix for {title}')
+ plt.xlabel('Predicted Label')
+ plt.ylabel('True Label')
+ plt.show()
+
+ print("\nGenerating visualizations...")
+ plot_cm(y_test, y_pred_knn, 'K-Nearest Neighbors')
+ plot_cm(y_test, y_pred_svm, 'Support Vector Machine')
+
+
